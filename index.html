@@ -11,32 +11,26 @@
     <div class="options-box">
       <h3>Find Best Places in Irving,TX</h3>
       <div>
-        <input id="show-listings" type="button" value="Show Listings">
-        <input id="hide-listings" type="button" value="Hide Listings">
-        <hr>
         <div id="filter">
-          <input type="text" placeholder="Your place goes here!" />
+          <input id="filterInput" type="text" placeholder="Your place goes here!" 
+                             data-bind="textInput: filter , event: { input: filterList }"/>
         </div>
         <div class="menu_simple">
-          <ul>
-            <li><a href="#">Link 1</a></li>
-            <li><a href="#">Link 2</a></li>
-            <li><a href="#">Link 3</a></li>
-            <li><a href="#">Link 4</a></li>
-            <li><a href="#">Link 5</a></li>
+          <ul data-bind="foreach: filterdplaces">
+            <li data-bind="text: title"><a data-bind="click: $parent.title"></a></li>
           </ul>
         </div>
       </div>
     </div>
     <div id="map"></div>
   </div>
+  <script src="JS/Lib/knockout-3.4.2.js"></script>
+  <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+  <script async defer src="JS/Controllers/ForsqController.js"></script>
+  <script async defer src="JS/Views/RestaurantView.js"></script>
   <script async defer src="JS/script.js"></script>
-  <script async defer src="https://maps.googleapis.com/maps/api/js?
-                                        key=AIzaSyA14CqSuASKg0kxHWbzWXXROSALen4CotI
-                                        &v=3
-                                        &callback=initMap">
-
-                                        </script>
+  <script async defer src="JS/app.js"></script>
+  <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBJ8-DjxJRMe2EhANUTRbbMmAa-RWHYAo4&v=3&callback=Initialize" onerror="HandleError()"></script>
 
 
 </body>

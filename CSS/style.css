@@ -9,6 +9,7 @@ body {
 .container {
   height: 100%;
   width:100%;
+  max-width: 100%;
   position: relative;
 }
 
@@ -75,7 +76,7 @@ h3 {
 }
  
 .menu_simple ul li a:visited {
-    color: white;
+    color: #000000;
 }
  
 .menu_simple ul li a:hover, .menu_simple ul li .current {
