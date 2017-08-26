@@ -3,9 +3,9 @@ var ClientSecret = "HUNL4DBSS0IWKR0J2HCPA4MLKPMU3VHZMSMZIOYXGRPQEODL";
 
 
 var ForSQ = function () {
-    var restaurant = {};
+    var restaurantView = new RestaurantView();
     var self = this;
-    this.getInfo = function (lat , lng , title) {
+    this.getInfo = function (lat , lng , title , infowindow) {
         var coordinates = lat + "," + lng;
         var url = "https://api.foursquare.com/v2/venues/search?ll=" + coordinates +
                   "&query=" + title + 
@@ -14,7 +14,6 @@ var ForSQ = function () {
                   '&v=20160118';
 
         var settings = {
-            "async": false,
             "crossDomain": true,
             "url": url,
             "method": "GET"
@@ -22,10 +21,11 @@ var ForSQ = function () {
           
           $.getJSON(settings).done(function (data) {
             var restaurant = data.response.venues[0];
-            self.restaurant = restaurant;
+            var content = restaurantView.createView(restaurant);
+            infowindow.setContent(content);
           })
           .fail(function(err){
-              console.error('There is error happening when we try to request your data');
+              alert('There is error happening when we try to request your data with ForSquare API');
               if(err)
                 console.dir(err);
           })

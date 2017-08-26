@@ -4,5 +4,5 @@ function Initialize(){
 }
 
 function handleError(){
-    console.error("Google Maps APIs failed to load. Please check your internet connection and try again.");
+    alert("Google Maps APIs failed to load. Please check your internet connection and try again.");
 }

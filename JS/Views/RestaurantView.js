@@ -1,7 +1,6 @@
 var RestaurantView = function () {
 
     this.createView = function (data) {
-        console.dir(data)
         if (data) {
             var content = '';
             if(data.url)

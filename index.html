@@ -3,34 +3,39 @@
 
 <head>
   <title> Neigherhood App </title>
-  <link rel="stylesheet" type="text/css" href="CSS/style.css" />
+  <link rel="stylesheet" href="CSS/style.css" />
   <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta charset="utf-8">
 </head>
 
 <body>
   <div class="container">
-    <div class="options-box">
-      <h3>Find Best Places in Irving,TX</h3>
-      <div>
-        <div id="filter">
-          <input id="filterInput" type="text" placeholder="Your place goes here!" data-bind="textInput: filter , event: { input: filterList }"
-          />
-        </div>
-        <div class="menu_simple">
-          <ul data-bind="foreach: filterdplaces">
-              <li data-bind="text: title"></li>
-          </ul>
+    <aside>
+      <div class="options-box">
+        <h3>Find Best Places in Irving,TX</h3>
+        <div>
+          <div id="filter">
+            <input id="filterInput" type="text" placeholder="Your place goes here!" data-bind="textInput: filter , event: { input: filterList }"
+            />
+          </div>
+          <div class="menu_simple">
+            <ul data-bind="foreach: filterdplaces">
+              <li data-bind="text: title , event : { click : $parent.activateMarker }"></li>
+            </ul>
+          </div>
         </div>
       </div>
-    </div>
-    <div id="map"></div>
+    </aside>
+ 
+      <div id="map"></div>
+ 
   </div>
   <script src="JS/Lib/knockout-3.4.2.js"></script>
   <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
-  <script async defer src="JS/Controllers/ForsqController.js"></script>
-  <script async defer src="JS/Views/RestaurantView.js"></script>
-  <script async defer src="JS/script.js"></script>
-  <script async defer src="JS/app.js"></script>
+  <script src="JS/Views/RestaurantView.js"></script>
+  <script src="JS/Controllers/ForsqController.js"></script>
+  <script src="JS/script.js"></script>
+  <script src="JS/app.js"></script>
   <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCBPsV3qnw-m4u3pxuAad4PfBBe2e0BXrE&v=3&callback=Initialize"
     onerror="handleError()"></script>
 </body>

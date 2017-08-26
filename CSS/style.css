@@ -81,12 +81,13 @@ h3 {
     padding : 5px;
 }
 
-.menu_simple ul li a {
+.menu_simple ul li {
     text-decoration: none;
     color: #000000; 
-    padding: 30px 30px;
+    padding: 6px 6px;
     background-color: #FFFFFF;
     display:block;
+    cursor: pointer;
 }
 
  

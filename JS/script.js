@@ -1,25 +1,23 @@
 'use strict'
 
-var locations = [
-  { title: 'LA Burger', location: { lat: 32.94282, lng: -96.95268 } },
-  { title: 'Arabian Bites', location: { lat: 32.9201, lng: -96.95696 } },
-  { title: 'Via Real', location: { lat: 32.861240459571, lng: -96.957242938066 } },
-  { title: 'Andalous Mediterranean Grill', location: { lat: 32.9201, lng: -96.9581298828125 } },
-  { title: 'Vitality Bowls', location: { lat: 32.8920611115699, lng: -96.959572487513 } },
-  { title: 'Empa Mundo', location: { lat: 32.8603949, lng: -96.9921652 } },
-  { title: 'Mr Max', location: { lat: 32.848083, lng: -96.9920651 } },
-  { title: 'Argentina Bakery', location: { lat: 32.8402783530411, lng: -96.9918395185998 } },
-  { title: 'Subz N Stuff', location: { lat: 32.8672144894962, lng: -96.9399749767212 } },
-  { title: 'Buffalo Wild Wings', location: { lat: 32.917905, lng: -96.963455 } }
-]
+var locations;
+
+$.getJSON('~/../Data/locations.json' , function (data){
+  console.log(data);
+  locations = data;
+})
 
 var Model = function () {
   var self = this;
   this.filter = ko.observable('');
   this.filterdplaces = ko.observableArray(locations);
   var viewModel = new ViewModel();
+  this.activateMarker = function (location) {
+    var marker = viewModel.markers.find(m=> m.title == location.title)
+    google.maps.event.trigger(marker, 'click');
+  }
   this.filterList = function () {
-    
+
     var filter = self.filter().toLowerCase();
     if (filter === "") {
       viewModel.DrawMarkers(locations);
@@ -36,6 +34,7 @@ var Model = function () {
 
 var ViewModel = function () {
   var self = this;
+
   // Create a styles array to use with the map.
   var styles = [
     {
@@ -105,8 +104,7 @@ var ViewModel = function () {
   ];
   this.largeInfowindow = new google.maps.InfoWindow();
   this.fsq = new ForSQ();
-  this.restaurantView = new RestaurantView();
-  
+
   // Create a new blank array for all the listing markers.
   this.markers = [];
 
@@ -139,22 +137,20 @@ var ViewModel = function () {
   // one infowindow which will open at the marker that is clicked, and populate based
   // on that markers position.
   this.populateInfoWindow = function (marker, infowindow) {
-    // Check to make sure the infowindow is not already opened on this marker.
-    infowindow.marker = marker;
-    var restaurant = self.fsq.getInfo(marker.position.lat(), marker.position.lng(), marker.title);
-    var content = self.restaurantView.createView(self.fsq.restaurant);
-    infowindow.setContent(content);
-    infowindow.open(map, marker);
-    // Make sure the marker property is cleared if the infowindow is closed.
-    infowindow.addListener('closeclick', function () {
-      infowindow.marker = null;
-    });
+    
+      infowindow.marker = marker;
+      self.fsq.getInfo(marker.position.lat(), marker.position.lng(), marker.title , infowindow);
+      infowindow.open(map, marker);
+      // Make sure the stop animation if the infowindow is closed.
+      infowindow.addListener('closeclick', function () {
+        infowindow.marker.setAnimation(null);
+      });
   }
 
   // This function will loop through the listings and hide them all.
   this.hideListings = function () {
     for (var i = 0; i < self.markers.length; i++) {
-      self.markers[i].setMap(null);
+      self.markers[i].setVisible(false);
     }
   }
 
@@ -162,10 +158,6 @@ var ViewModel = function () {
     var animation;
     self.hideListings();
 
-    if (places.length < 10)
-      animation = google.maps.Animation.BOUNCE;
-    else
-      animation = google.maps.Animation.DROP;
 
     for (var i = 0; i < places.length; i++) {
       // Get the position from the location array.
@@ -175,18 +167,28 @@ var ViewModel = function () {
       var marker = new google.maps.Marker({
         position: position,
         title: title,
-        animation: animation,
+        animation: google.maps.Animation.DROP,
         icon: self.defaultIcon,
         id: i,
         map: self.map
       });
 
-      // Push the marker to our array of markers.
-      self.markers.push(marker);
+
+
+      marker.toggleBounce = function () {
+        if (this.getAnimation() !== null) {
+          this.setAnimation(null);
+        } else {
+          this.setAnimation(google.maps.Animation.BOUNCE);
+        }
+      }
       // Create an onclick event to open the large infowindow at each marker.
       marker.addListener('click', function () {
-        self.populateInfoWindow(this, self.largeInfowindow);
+        this.toggleBounce();
+        // this.setAnimation(google.maps.Animation.BOUNCE);
+        self.populateInfoWindow(this, self.largeInfowindow)
       });
+
       // Two event listeners - one for mouseover, one for mouseout,
       // to change the colors back and forth.
       marker.addListener('mouseover', function () {
@@ -195,6 +197,9 @@ var ViewModel = function () {
       marker.addListener('mouseout', function () {
         this.setIcon(self.defaultIcon);
       });
+
+      // Push the marker to our array of markers.
+      self.markers.push(marker);
     }
   }
 
