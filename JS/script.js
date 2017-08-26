@@ -1,11 +1,8 @@
 'use strict'
 
-var locations;
+var locations = loadData();
 
-$.getJSON('~/../Data/locations.json' , function (data){
-  console.log(data);
-  locations = data;
-})
+var map;
 
 var Model = function () {
   var self = this;
@@ -109,7 +106,7 @@ var ViewModel = function () {
   this.markers = [];
 
   // Constructor creates a new map - only center and zoom are required.
-  this.map = new google.maps.Map(document.getElementById('map'), {
+  map = new google.maps.Map(document.getElementById('map'), {
     center: { lat: 32.8140, lng: -96.9489 },
     zoom: 11,
     styles: styles,
@@ -139,8 +136,7 @@ var ViewModel = function () {
   this.populateInfoWindow = function (marker, infowindow) {
     
       infowindow.marker = marker;
-      self.fsq.getInfo(marker.position.lat(), marker.position.lng(), marker.title , infowindow);
-      infowindow.open(map, marker);
+      self.fsq.getInfo(marker.position.lat(), marker.position.lng(), marker.title , infowindow , map);
       // Make sure the stop animation if the infowindow is closed.
       infowindow.addListener('closeclick', function () {
         infowindow.marker.setAnimation(null);
@@ -170,7 +166,7 @@ var ViewModel = function () {
         animation: google.maps.Animation.DROP,
         icon: self.defaultIcon,
         id: i,
-        map: self.map
+        map: map
       });
 
 

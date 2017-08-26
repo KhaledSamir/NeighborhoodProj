@@ -23,6 +23,7 @@ var ForSQ = function () {
             var restaurant = data.response.venues[0];
             var content = restaurantView.createView(restaurant);
             infowindow.setContent(content);
+            infowindow.open(map, infowindow.marker);
           })
           .fail(function(err){
               alert('There is error happening when we try to request your data with ForSquare API');
