@@ -1,5 +1,5 @@
-var Client_ID = "YourClientID";
-var ClientSecret = "YourClientSecret";
+var Client_ID = "LEIXSMCPJ01VRB1F0XP22Z2F5EIP10TFN5VTJYU5NZYHWXJM";
+var ClientSecret = "HUNL4DBSS0IWKR0J2HCPA4MLKPMU3VHZMSMZIOYXGRPQEODL";
 
 
 var ForSQ = function () {
