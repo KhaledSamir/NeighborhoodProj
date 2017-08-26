@@ -24,8 +24,9 @@ var ForSQ = function () {
             self.restaurant = restaurant;
           })
           .fail(function(err){
-              console.log('There is error happening when we try to request your data');
-              console.log(err);
+              console.error('There is error happening when we try to request your data');
+              if(err)
+                console.dir(err);
           })
 
     }

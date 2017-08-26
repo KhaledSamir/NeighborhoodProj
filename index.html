@@ -2,6 +2,7 @@
 <html>
 
 <head>
+  <title> Neigherhood App </title>
   <link rel="stylesheet" type="text/css" href="CSS/style.css" />
   <meta name="viewport" content="width=device-width,initial-scale=1">
 </head>
@@ -12,12 +13,12 @@
       <h3>Find Best Places in Irving,TX</h3>
       <div>
         <div id="filter">
-          <input id="filterInput" type="text" placeholder="Your place goes here!" 
-                             data-bind="textInput: filter , event: { input: filterList }"/>
+          <input id="filterInput" type="text" placeholder="Your place goes here!" data-bind="textInput: filter , event: { input: filterList }"
+          />
         </div>
         <div class="menu_simple">
           <ul data-bind="foreach: filterdplaces">
-            <li data-bind="text: title"><a data-bind="click: $parent.title"></a></li>
+              <li data-bind="text: title"></li>
           </ul>
         </div>
       </div>
@@ -30,9 +31,8 @@
   <script async defer src="JS/Views/RestaurantView.js"></script>
   <script async defer src="JS/script.js"></script>
   <script async defer src="JS/app.js"></script>
-  <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBJ8-DjxJRMe2EhANUTRbbMmAa-RWHYAo4&v=3&callback=Initialize" onerror="HandleError()"></script>
-
-
+  <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBJ8-DjxJRMe2EhANUTRbbMmAa-RWHYAo4&v=3&callback=Initialize"
+    onerror="handleError()"></script>
 </body>
 
 </html>

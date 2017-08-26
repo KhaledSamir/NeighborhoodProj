@@ -5,16 +5,18 @@ var RestaurantView = function () {
         if (data) {
             var content = '';
             if(data.url)
-                content += '<div class="content"><b>Url :</b> <a href="' + data.url + '">' + data.url + "</a></div>";
-            content += '<div class="content"><b>Name : </b>' + data.name + "</div>";
-            content += '<div class="content"><b>Type : </b>' + data.categories[0].shortName + "</div>";
+                content += '<div><b>Url :</b> <a target="_blank"href="'
+                             + data.url + '">' + data.url + "</a></div>";
+            content += '<div><b>Name : </b>' + data.name + "</div>";
+            content += '<div><b>Type : </b>' + data.categories[0].shortName + "</div>";
             
             if(data.hasMenu)
-                content += '<div class="content"><b>Menu Link :</b> <a href="' + data.menu.url + '">Menu' + "</a></div>";
+                content += '<div><b>Menu Link :</b> <a target="_blank" href="' + data.menu.url +
+                                             '">Menu' + "</a></div>";
             if(data.contact.formattedPhone) {
-                content += '<div class="content"><b>Phone :</b> ' + data.contact.formattedPhone + "</div>";
+                content += '<div><b>Phone :</b> ' + data.contact.formattedPhone + "</div>";
             }
-            content += '<div class="content"><b>Address : </b>' + data.location.formattedAddress.toString() + "</div>";
+            content += '<div><b>Address : </b>' + data.location.formattedAddress.toString() + "</div>";
             
             return content;
         }

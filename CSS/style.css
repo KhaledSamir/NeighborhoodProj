@@ -10,21 +10,17 @@ body {
   height: 100%;
   width:100%;
   max-width: 100%;
-  position: relative;
 }
 
-input[type="button"]{
-    width: 48%;
-}
 
 input[type="text"]{
-    width:315px;
+    width:95%;
     line-height: 15px;
     padding: 8px;
 }
 
 input {
-  font-size: 16px; 
+  font-size: 20px; 
 }
 
 h3 {
@@ -37,25 +33,42 @@ h3 {
 #map {
   bottom:0px;
   height: 100%;
-  left: 362px;
-  position: absolute;
-  right: 0px;
+  display: block;
+  width: 100%;
 }
 
 .options-box {
-  background: #fff;
+  background: #FFFFFF;
   border: 1px solid #999;
-  border-radius: 3px;
+  border-radius: 2px;
   height: 100%;
   line-height: 35px;
   padding: 10px 10px 30px 10px;
-  text-align: left;
-  width: 340px;
+  z-index: 1;
+  position: absolute;
+}
+
+@media  only screen and (max-device-width : 959px), only screen and (max-width : 959px){
+    .options-box {
+        flex-direction: column;
+        height: auto;
+        width: 100%;
+    }
+
+    input[type="text"]{
+        width: 90%;
+    }
+
+    body {
+        font-size: 22px;
+    }
 }
 
 #filter {
     margin-top: 20px;
     margin-bottom: 30px;
+    width: 100%;
+    max-width: 100%;
 }
 
 /* CSSTerm.com Simple CSS menu */
@@ -65,21 +78,19 @@ h3 {
     padding: 0;
     width:100%;
     list-style-type: none;
+    padding : 5px;
 }
 
 .menu_simple ul li a {
     text-decoration: none;
     color: #000000; 
-    padding: 10.5px 11px;
+    padding: 30px 30px;
     background-color: #FFFFFF;
     display:block;
 }
+
  
-.menu_simple ul li a:visited {
-    color: #000000;
-}
- 
-.menu_simple ul li a:hover, .menu_simple ul li .current {
+.menu_simple ul li:hover, .menu_simple ul li .current {
     color: #000000;
     background-color: #20AFD7;
 }

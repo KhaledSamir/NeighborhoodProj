@@ -1,11 +1,5 @@
 'use strict'
 
-var map;
-var fsq = new ForSQ();
-var restaurantView = new RestaurantView();
-// Create a new blank array for all the listing markers.
-var markers = [];
-
 var locations = [
   { title: 'LA Burger', location: { lat: 32.94282, lng: -96.95268 } },
   { title: 'Arabian Bites', location: { lat: 32.9201, lng: -96.95696 } },
@@ -23,6 +17,26 @@ var Model = function () {
   var self = this;
   this.filter = ko.observable('');
   this.filterdplaces = ko.observableArray(locations);
+  var viewModel = new ViewModel();
+  this.filterList = function () {
+    
+    var filter = self.filter().toLowerCase();
+    if (filter === "") {
+      viewModel.DrawMarkers(locations);
+      return self.filterdplaces(locations)
+    } else {
+      var filterdplaces = locations.filter(loc => loc.title.toLowerCase().includes(filter)
+        || loc.title.startsWith(filter));
+
+      self.filterdplaces(filterdplaces)
+      viewModel.DrawMarkers(self.filterdplaces());
+    }
+  }
+}
+
+var ViewModel = function () {
+  var self = this;
+  // Create a styles array to use with the map.
   var styles = [
     {
       featureType: 'water',
@@ -89,166 +103,104 @@ var Model = function () {
       ]
     }
   ];
+  this.largeInfowindow = new google.maps.InfoWindow();
+  this.fsq = new ForSQ();
+  this.restaurantView = new RestaurantView();
+  
+  // Create a new blank array for all the listing markers.
+  this.markers = [];
+
   // Constructor creates a new map - only center and zoom are required.
-  map = new google.maps.Map(document.getElementById('map'), {
+  this.map = new google.maps.Map(document.getElementById('map'), {
     center: { lat: 32.8140, lng: -96.9489 },
     zoom: 11,
     styles: styles,
     mapTypeControl: false
   });
-  var viewModel = new ViewModel();
 
-  this.filterList = function () {
-
-    var filter = self.filter().toLowerCase();
-    if (!filter) {
-      reDrawMarkers(locations , viewModel);
-      return self.filterdplaces(locations)
-    } else {
-      var filterdplaces = self.filterdplaces().filter(loc => loc.title.toLowerCase().includes(filter)
-        || loc.title.startsWith(filter));
-      self.filterdplaces(filterdplaces)
-      reDrawMarkers(self.filterdplaces() , viewModel);
-    }
+  var makeMarkerIcon = function (markerColor) {
+    var markerImage = new google.maps.MarkerImage(
+      'http://chart.googleapis.com/chart?chst=d_map_spin&chld=1.15|0|' + markerColor +
+      '|40|_|%E2%80%A2',
+      new google.maps.Size(21, 34),
+      new google.maps.Point(0, 0),
+      new google.maps.Point(10, 34),
+      new google.maps.Size(21, 34));
+    return markerImage;
   }
-}
 
-
-var ViewModel = function () {
-  var self = this;
-  this.largeInfowindow = new google.maps.InfoWindow();
   // Style the markers a bit. This will be our listing marker icon.
   this.defaultIcon = makeMarkerIcon('0091ff');
   // Create a "highlighted location" marker color for when the user
   // mouses over the marker.
   this.highlightedIcon = makeMarkerIcon('FFFF24');
 
-
-
-
-  
-  // Create a styles array to use with the map.
-
-  //   google.maps.event.addDomListener(window, "resize", function() {
-  //     console.log('hh')
-  //     var center = map.getCenter();
-  //     google.maps.event.trigger(map, "resize");
-  //     map.setCenter(center); 
-  //  });
-
-  // These are the real estate listings that will be shown to the user.
-  // Normally we'd have these in a database instead.
-
-  
-
-  // The following group uses the location array to create an array of markers on initialize.
-
-  for (var i = 0; i < locations.length; i++) {
-    // Get the position from the location array.
-    var position = locations[i].location;
-    var title = locations[i].title;
-    // Create a marker per location, and put into markers array.
-    var marker = new google.maps.Marker({
-      position: position,
-      title: title,
-      animation: google.maps.Animation.DROP,
-      icon: self.defaultIcon,
-      id: i,
-      map: map
-    });
-    // Push the marker to our array of markers.
-    markers.push(marker);
-    // Create an onclick event to open the large infowindow at each marker.
-    marker.addListener('click', function () {
-      populateInfoWindow(this, self.largeInfowindow);
-    });
-    // Two event listeners - one for mouseover, one for mouseout,
-    // to change the colors back and forth.
-    marker.addListener('mouseover', function () {
-      this.setIcon(self.highlightedIcon);
-    });
-    marker.addListener('mouseout', function () {
-      this.setIcon(self.defaultIcon);
-    });
-  }
-}
-
-// This function populates the infowindow when the marker is clicked. We'll only allow
-// one infowindow which will open at the marker that is clicked, and populate based
-// on that markers position.
-function populateInfoWindow(marker, infowindow) {
-  // Check to make sure the infowindow is not already opened on this marker.
+  // This function populates the infowindow when the marker is clicked. We'll only allow
+  // one infowindow which will open at the marker that is clicked, and populate based
+  // on that markers position.
+  this.populateInfoWindow = function (marker, infowindow) {
+    // Check to make sure the infowindow is not already opened on this marker.
     infowindow.marker = marker;
-    var restaurant = fsq.getInfo(marker.position.lat(), marker.position.lng(), marker.title);
-    var content = restaurantView.createView(fsq.restaurant);
+    var restaurant = self.fsq.getInfo(marker.position.lat(), marker.position.lng(), marker.title);
+    var content = self.restaurantView.createView(self.fsq.restaurant);
     infowindow.setContent(content);
     infowindow.open(map, marker);
     // Make sure the marker property is cleared if the infowindow is closed.
     infowindow.addListener('closeclick', function () {
       infowindow.marker = null;
     });
+  }
+
+  // This function will loop through the listings and hide them all.
+  this.hideListings = function () {
+    for (var i = 0; i < self.markers.length; i++) {
+      self.markers[i].setMap(null);
+    }
+  }
+
+  this.DrawMarkers = function (places) {
+    var animation;
+    self.hideListings();
+
+    if (places.length < 10)
+      animation = google.maps.Animation.BOUNCE;
+    else
+      animation = google.maps.Animation.DROP;
+
+    for (var i = 0; i < places.length; i++) {
+      // Get the position from the location array.
+      var position = places[i].location;
+      var title = places[i].title;
+      // Create a marker per location, and put into markers array.
+      var marker = new google.maps.Marker({
+        position: position,
+        title: title,
+        animation: animation,
+        icon: self.defaultIcon,
+        id: i,
+        map: self.map
+      });
+
+      // Push the marker to our array of markers.
+      self.markers.push(marker);
+      // Create an onclick event to open the large infowindow at each marker.
+      marker.addListener('click', function () {
+        self.populateInfoWindow(this, self.largeInfowindow);
+      });
+      // Two event listeners - one for mouseover, one for mouseout,
+      // to change the colors back and forth.
+      marker.addListener('mouseover', function () {
+        this.setIcon(self.highlightedIcon);
+      });
+      marker.addListener('mouseout', function () {
+        this.setIcon(self.defaultIcon);
+      });
+    }
+  }
+
+  self.DrawMarkers(locations);
 }
 
-  this.reDrawMarkers = function (places , vm) {
-  var self = vm;
-  hideListings();
-  for (var i = 0; i < places.length; i++) {
-    // Get the position from the location array.
-    var position = places[i].location;
-    var title = places[i].title;
-    // Create a marker per location, and put into markers array.
-    var marker = new google.maps.Marker({
-      position: position,
-      title: title,
-      animation: google.maps.Animation.DROP,
-      icon: self.defaultIcon,
-      id: i,
-      map: map
-    });
-    // Push the marker to our array of markers.
-    markers.push(marker);
-    // Create an onclick event to open the large infowindow at each marker.
-    marker.addListener('click', function () {
-      populateInfoWindow(this, self.largeInfowindow);
-    });
-    // Two event listeners - one for mouseover, one for mouseout,
-    // to change the colors back and forth.
-    marker.addListener('mouseover', function () {
-      this.setIcon(self.highlightedIcon);
-    });
-    marker.addListener('mouseout', function () {
-      this.setIcon(self.defaultIcon);
-    });
-  }
-}
-// This function will loop through the markers array and display them all.
-function showListings() {
-  var bounds = new google.maps.LatLngBounds();
-  // Extend the boundaries of the map for each marker and display the marker
-  for (var i = 0; i < markers.length; i++) {
-    markers[i].setMap(map);
-    bounds.extend(markers[i].position);
-  }
-  map.fitBounds(bounds);
-}
 
-// This function will loop through the listings and hide them all.
-function hideListings() {
-  for (var i = 0; i < markers.length; i++) {
-    markers[i].setMap(null);
-  }
-}
 
-// This function takes in a COLOR, and then creates a new marker
-// icon of that color. The icon will be 21 px wide by 34 high, have an origin
-// of 0, 0 and be anchored at 10, 34).
-function makeMarkerIcon(markerColor) {
-  var markerImage = new google.maps.MarkerImage(
-    'http://chart.googleapis.com/chart?chst=d_map_spin&chld=1.15|0|' + markerColor +
-    '|40|_|%E2%80%A2',
-    new google.maps.Size(21, 34),
-    new google.maps.Point(0, 0),
-    new google.maps.Point(10, 34),
-    new google.maps.Size(21, 34));
-  return markerImage;
-}
+
