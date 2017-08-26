@@ -9,8 +9,9 @@ var ForSQ = function () {
         var coordinates = lat + "," + lng;
         var url = "https://api.foursquare.com/v2/venues/search?ll=" + coordinates +
                   "&query=" + title + 
-                  "&client_id=LEIXSMCPJ01VRB1F0XP22Z2F5EIP10TFN5VTJYU5NZYHWXJM" +
-                  "&client_secret=HUNL4DBSS0IWKR0J2HCPA4MLKPMU3VHZMSMZIOYXGRPQEODL&v=&v=20160118";
+                  "&client_id=" + Client_ID +
+                  "&client_secret=" + ClientSecret +
+                  '&v=20160118';
 
         var settings = {
             "async": false,
