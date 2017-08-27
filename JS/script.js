@@ -180,9 +180,17 @@ var ViewModel = function () {
       // }
       // Create an onclick event to open the large infowindow at each marker.
       marker.addListener('click', function () {
-        this.setAnimation(google.maps.Animation.BOUNCE);
+        var that = this;
+        this.setAnimation(google.maps.Animation.BOUNCE)
+        setTimeout(function (){
+          that.setAnimation(null)
+        } , 2000);
         self.populateInfoWindow(this, self.largeInfowindow)
       });
+
+      
+       // map.panTo(marker.getPosition());
+    
 
       // Two event listeners - one for mouseover, one for mouseout,
       // to change the colors back and forth.
