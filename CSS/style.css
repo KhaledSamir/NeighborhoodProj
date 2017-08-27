@@ -53,14 +53,20 @@ h3 {
         flex-direction: column;
         height: auto;
         width: 100%;
+        padding: 0px;
     }
 
     input[type="text"]{
         width: 90%;
     }
 
+    .menu_simple ul li {
+        float : left;
+        display: inline;
+    }
+
     body {
-        font-size: 22px;
+        font-size: 12px;
     }
 }
 
