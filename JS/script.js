@@ -2,6 +2,7 @@
 
 var locations = loadData();
 
+// Map variable is global so we can use it in all files
 var map;
 
 var Model = function () {
