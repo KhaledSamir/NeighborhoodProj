@@ -2,8 +2,9 @@
 
 var locations = loadData();
 
-// Map variable is global so we can use it in all files
-var map;
+// Map , Markers variables are global so we can use them in all files
+ 
+var map , markers = [];
 
 var Model = function () {
   var self = this;
@@ -11,7 +12,7 @@ var Model = function () {
   this.filterdplaces = ko.observableArray(locations);
   var viewModel = new ViewModel();
   this.activateMarker = function (location) {
-    var marker = viewModel.markers.find(m=> m.title == location.title)
+    var marker = markers.find(m=> m.title == location.title);
     google.maps.event.trigger(marker, 'click');
   }
   this.filterList = function () {
@@ -22,7 +23,7 @@ var Model = function () {
       return self.filterdplaces(locations)
     } else {
       var filterdplaces = locations.filter(loc => loc.title.toLowerCase().includes(filter)
-        || loc.title.startsWith(filter));
+                                                  || loc.title.startsWith(filter));
 
       self.filterdplaces(filterdplaces)
       viewModel.DrawMarkers(self.filterdplaces());
@@ -104,7 +105,6 @@ var ViewModel = function () {
   this.fsq = new ForSQ();
 
   // Create a new blank array for all the listing markers.
-  this.markers = [];
 
   // Constructor creates a new map - only center and zoom are required.
   map = new google.maps.Map(document.getElementById('map'), {
@@ -146,13 +146,14 @@ var ViewModel = function () {
 
   // This function will loop through the listings and hide them all.
   this.hideListings = function () {
-    for (var i = 0; i < self.markers.length; i++) {
-      self.markers[i].setVisible(false);
+    for (var i = 0; i < markers.length; i++) {
+      markers[i].setMap(null);
     }
+    markers.length = 0;
   }
 
   this.DrawMarkers = function (places) {
-    var animation;
+
     self.hideListings();
 
 
@@ -164,25 +165,22 @@ var ViewModel = function () {
       var marker = new google.maps.Marker({
         position: position,
         title: title,
-        animation: google.maps.Animation.DROP,
         icon: self.defaultIcon,
+        animation : google.maps.Animation.DROP,
         id: i,
         map: map
       });
 
-
-
-      marker.toggleBounce = function () {
-        if (this.getAnimation() !== null) {
-          this.setAnimation(null);
-        } else {
-          this.setAnimation(google.maps.Animation.BOUNCE);
-        }
-      }
+      // marker.toggleBounce = function () {
+      //   if (this.getAnimation() !== null) {
+      //     this.setAnimation(null);
+      //   } else {
+      //     this.setAnimation(google.maps.Animation.BOUNCE);
+      //   }
+      // }
       // Create an onclick event to open the large infowindow at each marker.
       marker.addListener('click', function () {
-        this.toggleBounce();
-        // this.setAnimation(google.maps.Animation.BOUNCE);
+        this.setAnimation(google.maps.Animation.BOUNCE);
         self.populateInfoWindow(this, self.largeInfowindow)
       });
 
@@ -196,7 +194,7 @@ var ViewModel = function () {
       });
 
       // Push the marker to our array of markers.
-      self.markers.push(marker);
+      markers.push(marker);
     }
   }
 
